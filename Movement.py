@@ -13,12 +13,12 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(SENSOR_PIN, GPIO.IN)
 
 # DB Config
-client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client["< DB_NAME >"]
+client = pymongo.MongoClient("<DB_ADDRESS IP:PORT>")
+db = client["<DB_NAME>"]
 
 # Telegram Config
-telegram = telegram.Bot(token='< TELEGRAM_TOKEN >')
-chat_id = < CHAT_ID >
+telegram = telegram.Bot(token='<telegram_token>')
+chat_id = '<TELEGRAM CHAT ID>'
 
 # Locations list
 # # 1 - Attic
