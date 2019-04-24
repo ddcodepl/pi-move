@@ -4,6 +4,8 @@ import RPi.GPIO as GPIO
 import time
 import pymongo
 import datetime
+from pygame import mixer
+from Spotify import switch_device_and_play_music
 
 SENSOR_PIN = 23
 
@@ -12,11 +14,11 @@ GPIO.setup(SENSOR_PIN, GPIO.IN)
 
 # DB Config
 client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client["movement_tracker"]
+db = client["< DB_NAME >"]
 
 # Telegram Config
-telegram = telegram.Bot(token='898359191:AAEclbdwNTQ9EvUXKix75pt1D0M3_mvWQqg')
-chat_id = 198659984
+telegram = telegram.Bot(token='< TELEGRAM_TOKEN >')
+chat_id = < CHAT_ID >
 
 # Locations list
 # # 1 - Attic
@@ -32,6 +34,9 @@ cameraMounted = 0
 # # 1 - Move detected
 # # 2 - Move detected and photo taken
 
+# Turn off after X seconds
+TIMEOUT = 10
+
 
 def save_record(location=1, action=1):
     logs = db.logs
@@ -45,6 +50,7 @@ def save_record(location=1, action=1):
 
 
 def move_cb(channel):
+    switch_device_and_play_music()
     actionID = 1
     save_record(locationID, actionID)
 
@@ -54,6 +60,7 @@ def move_cb(channel):
 
 
 def photo_cb(channel):
+    switch_device_and_play_music()
     actionID = 2
     # Subprocess to take a photo as can't use OpenCV without the screen
     subprocess.call('./photo.sh', shell=True)
