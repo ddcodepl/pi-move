@@ -34,6 +34,7 @@ cameraMounted = 0
 # Actions list
 # # 1 - Move detected
 # # 2 - Move detected and photo taken
+# # 3 - Movement detected and Spotify activated
 
 # Turn off after X seconds
 TIMEOUT = 10
@@ -51,8 +52,10 @@ def save_record(location=1, action=1):
 
 
 def move_cb(channel):
-    switch_device_and_play_music()
     actionID = 1
+    if switch_device_and_play_music():
+        actionID = 3
+
     save_record(locationID, actionID)
 
     telegram.send_message(

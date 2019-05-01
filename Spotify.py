@@ -64,6 +64,7 @@ def switch_device_and_play_music():
 
     if currentDevice == deviceName:
         print 'This device is already active'
+        return False
     else:
         deviceID = find_device_id_by_name(deviceName)
         url = 'https://api.spotify.com/v1/me/player'
@@ -76,6 +77,7 @@ def switch_device_and_play_music():
             print r.text
         else:
             print 'Device changed'
+            return True
 
 
 switch_device_and_play_music()
