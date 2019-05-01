@@ -1,23 +1,24 @@
+#!/usr/bin/python
 import os
 import json
+import time
+import config
 import spotipy
 import requests
+import subprocess
 import spotipy.util as util
 from simplejson import JSONDecodeError
 
-username = '< YOUR_SPOTIFY_LOGIN >'
-scope = 'user-read-playback-state user-modify-playback-state'
-client_id = '< YOUR_CLIENT_ID>'
-client_secret = '< YOUR_CLIENT_SECRET>'
-redirect_uri = 'http://localhost:8888/callback'
+# Requirements
+# # Run as root
 
 try:
     token = util.prompt_for_user_token(
-        username, scope, client_id, client_secret, redirect_uri)
+        config.spotify_username, config.spotify_scope, config.spotify_client_id, config.spotify_client_secret, config.spotify_redirect_uri)
 except (AttributeError, JSONDecodeError):
     os.remove('.cache-'+username)
     token = util.prompt_for_user_token(
-        username, scope, client_id, client_secret, redirect_uri)
+        config.spotify_username, config.spotify_scope, config.spotify_client_id, config.spotify_client_secret, config.spotify_redirect_uri)
 
 headers = {
     'Accept': "application/json",
@@ -25,15 +26,30 @@ headers = {
     'Content-Type': "application/json",
 }
 
+deviceName = 'raspotify'
 
-def find_device_id_by_name(name='raspotify'):
+
+def get_current_device():
     url = 'https://api.spotify.com/v1/me/player/devices'
     r = requests.get(url, headers=headers)
     data = r.json()
     for device in data['devices']:
+        if device['is_active'] == True:
+            return device['name']
+
+
+def find_device_id_by_name(name='raspotify'):
+    subprocess.Popen(['sudo', 'systemctl', 'restart', 'raspotify'])
+    time.sleep(1)
+    url = 'https://api.spotify.com/v1/me/player/devices'
+    r = requests.get(url, headers=headers)
+    data = r.json()
+    print data
+    deviceID = ' '
+    for device in data['devices']:
         if name == device['name']:
             deviceID = device['id']
-            break
+            return deviceID
 
     if deviceID:
         print name + " id is: " + deviceID
@@ -43,12 +59,23 @@ def find_device_id_by_name(name='raspotify'):
 
 
 def switch_device_and_play_music():
-    deviceID = find_device_id_by_name('raspotify')
-    url = 'https://api.spotify.com/v1/me/player'
-    data = '{"device_ids":["'+deviceID+'"]}'
-    r = requests.put(url, data=data, headers=headers)
+    # Need root
+    currentDevice = get_current_device()
 
-    if r.text:
-        print r.text
+    if currentDevice == deviceName:
+        print 'This device is already active'
     else:
-        print 'Device changed'
+        deviceID = find_device_id_by_name(deviceName)
+        url = 'https://api.spotify.com/v1/me/player'
+        data = '{"device_ids":["'+deviceID+'"]}'
+        r = requests.put(url, data=data, headers=headers)
+
+        time.sleep(1)
+
+        if r.text:
+            print r.text
+        else:
+            print 'Device changed'
+
+
+switch_device_and_play_music()
