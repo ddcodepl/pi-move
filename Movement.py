@@ -4,7 +4,6 @@ import subprocess
 import RPi.GPIO as GPIO
 import time
 import pymongo
-import datetime
 import config
 from Spotify import switch_device_and_play_music
 
@@ -29,12 +28,19 @@ locationID = 1
 # Camera attached
 # # 0 - No
 # # 1 - Yes
-cameraMounted = 0
+cameraMounted = 1
+
+
+# Speaker attached
+# # 0 - No
+# # 1 - Yes
+speakerMounted = 0
 
 # Actions list
 # # 1 - Move detected
 # # 2 - Move detected and photo taken
 # # 3 - Movement detected and Spotify activated
+# # 4 - Movement detected, photo taken and Spotify activated
 
 # Turn off after X seconds
 TIMEOUT = 10
@@ -53,7 +59,9 @@ def save_record(location=1, action=1):
 
 def move_cb(channel):
     actionID = 1
-    if switch_device_and_play_music():
+
+    if speakerMounted:
+        switch_device_and_play_music()
         actionID = 3
 
     save_record(locationID, actionID)
@@ -64,8 +72,12 @@ def move_cb(channel):
 
 
 def photo_cb(channel):
-    switch_device_and_play_music()
     actionID = 2
+
+    if speakerMounted:
+        switch_device_and_play_music()
+        actionID = 4
+
     subprocess.call('./photo.sh', shell=True)
 
     telegram.send_photo(chat_id=chat_id, photo=open('./snap.jpg', 'rb'))
