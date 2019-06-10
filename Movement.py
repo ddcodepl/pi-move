@@ -5,9 +5,10 @@ import RPi.GPIO as GPIO
 import time
 import pymongo
 import config
+import os
 from Spotify import switch_device_and_play_music
 
-SENSOR_PIN = 23
+SENSOR_PIN = config.device.move_sensor_port
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SENSOR_PIN, GPIO.IN)
@@ -20,25 +21,6 @@ db = client["movement_tracker"]
 telegram = telegram.Bot(config.telegram_token)
 chat_id = config.telegram_chat_id
 
-
-# Locations list
-# # 1 - Attic
-# # 2 - Office
-locationID = 1
-
-
-# Camera attached
-# # 0 - No
-# # 1 - Yes
-cameraMounted = 1
-
-
-# Speaker attached
-# # 0 - No
-# # 1 - Yes
-speakerMounted = 0
-
-
 # Actions list
 # # 1 - Move detected
 # # 2 - Move detected and photo taken
@@ -50,14 +32,12 @@ speakerMounted = 0
 # define our clear function
 def clear():
     # for windows
-    if name == 'nt':
-        _ = system('cls')
-
-        # for mac and linux(here, os.name is 'posix')
+    if os.name == 'nt':
+        _ = os.system('cls')
     else:
-        _ = system('clear')
+        _ = os.system('clear')
 
-def save_record(location=1, action=1):
+def save_record(location=config.device.id, action=1):
     logs = db.logs
     data = {
         "location_id": location,
@@ -70,11 +50,11 @@ def save_record(location=1, action=1):
 def move_cb(channel):
     actionID = 1
 
-    if speakerMounted == 1:
+    if config.device.has_speaker == 1:
         switch_device_and_play_music()
         actionID = 3
 
-    save_record(locationID, actionID)
+    save_record(config.device.id, actionID)
 
     if telegram.send_message(chat_id=chat_id, text="Movement detected in attic"):
         print('message sent')
@@ -83,27 +63,27 @@ def move_cb(channel):
 def photo_cb(channel):
     actionID = 2
 
-    if speakerMounted == 1:
+    if config.device.has_speaker == 1:
         switch_device_and_play_music()
         actionID = 4
 
     subprocess.call('./photo.sh', shell=True)
-    clear();
+    clear()
 
     if telegram.send_photo(chat_id=chat_id, photo=open('./snap.jpg', 'rb')) :
         print('photo sent')
 
-    if telegram.send_message(chat_id=chat_id, text="Movement detected in attic"):
+    if telegram.send_message(chat_id=chat_id, text="Movement detected in "+config.device_location.name):
         print('message sent')
 
-    save_record(locationID, actionID)
+    save_record(config.device.id, actionID)
 
 
 time.sleep(2)
 
 try:
 
-    if cameraMounted == 0:
+    if config.device.has_camera == 0:
         print("Init without camera")
         GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=move_cb)
     else:

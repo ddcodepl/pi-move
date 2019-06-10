@@ -38,7 +38,7 @@ def get_current_device():
             return device['name']
 
 
-def find_device_id_by_name(name='raspotify'):
+def find_device_id_by_name(name=config.device.name):
     subprocess.Popen(['sudo', 'systemctl', 'restart', 'raspotify'])
     url = 'https://api.spotify.com/v1/me/player/devices'
     r = requests.get(url, headers=headers)
