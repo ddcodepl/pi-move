@@ -91,12 +91,15 @@ def photo_cb(channel):
 
 try:
     print('Started')
+
     if cameraMounted == 0:
         GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=move_cb)
     else:
         GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=photo_cb)
+
     while True:
         time.sleep(100)
+
 except KeyboardInterrupt:
     print "Finish..."
 GPIO.cleanup()

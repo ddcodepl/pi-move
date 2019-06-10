@@ -78,6 +78,3 @@ def switch_device_and_play_music():
         else:
             print 'Device changed'
             return True
-
-
-switch_device_and_play_music()
