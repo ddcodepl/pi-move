@@ -13,7 +13,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(SENSOR_PIN, GPIO.IN)
 
 # DB Config
-client = pymongo.MongoClient("http://localhost:27017/")
+client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["movement_tracker"]
 
 # Telegram Config
