@@ -60,7 +60,7 @@ def save_record(location=1, action=1):
 def move_cb(channel):
     actionID = 1
 
-    if speakerMounted:
+    if speakerMounted == 1:
         switch_device_and_play_music()
         actionID = 3
 
@@ -74,7 +74,7 @@ def move_cb(channel):
 def photo_cb(channel):
     actionID = 2
 
-    if speakerMounted:
+    if speakerMounted == 1:
         switch_device_and_play_music()
         actionID = 4
 
