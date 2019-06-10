@@ -20,10 +20,12 @@ db = client["movement_tracker"]
 telegram = telegram.Bot(config.telegram_token)
 chat_id = config.telegram_chat_id
 
+
 # Locations list
 # # 1 - Attic
 # # 2 - Office
 locationID = 1
+
 
 # Camera attached
 # # 0 - No
@@ -36,6 +38,7 @@ cameraMounted = 1
 # # 1 - Yes
 speakerMounted = 0
 
+
 # Actions list
 # # 1 - Move detected
 # # 2 - Move detected and photo taken
@@ -43,8 +46,16 @@ speakerMounted = 0
 # # 4 - Movement detected, photo taken and Spotify activated
 
 # Turn off after X seconds
-TIMEOUT = 10
 
+# define our clear function
+def clear():
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+
+        # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 
 def save_record(location=1, action=1):
     logs = db.logs
@@ -54,7 +65,6 @@ def save_record(location=1, action=1):
         "time": int(time.time())
     }
     insert = logs.insert_one(data)
-    print('record saved')
 
 
 def move_cb(channel):
@@ -66,9 +76,8 @@ def move_cb(channel):
 
     save_record(locationID, actionID)
 
-    telegram.send_message(
-        chat_id=chat_id, text="Movement detected in attic")
-    print('message sent')
+    if telegram.send_message(chat_id=chat_id, text="Movement detected in attic"):
+        print('message sent')
 
 
 def photo_cb(channel):
@@ -79,26 +88,30 @@ def photo_cb(channel):
         actionID = 4
 
     subprocess.call('./photo.sh', shell=True)
+    clear();
 
-    telegram.send_photo(chat_id=chat_id, photo=open('./snap.jpg', 'rb'))
-    print('photo sent')
+    if telegram.send_photo(chat_id=chat_id, photo=open('./snap.jpg', 'rb')) :
+        print('photo sent')
 
-    telegram.send_message(
-        chat_id=chat_id, text="Movement detected in attic")
-    print('message sent')
+    if telegram.send_message(chat_id=chat_id, text="Movement detected in attic"):
+        print('message sent')
+
     save_record(locationID, actionID)
 
 
+time.sleep(2)
+
 try:
-    print('Started')
 
     if cameraMounted == 0:
+        print("Init without camera")
         GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=move_cb)
     else:
+        print("Init with camera")
         GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=photo_cb)
 
-    while True:
-        time.sleep(100)
+    while 1:
+        time.sleep(1)
 
 except KeyboardInterrupt:
     print "Finish..."
