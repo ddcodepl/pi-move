@@ -73,7 +73,7 @@ def photo_cb(channel):
     if telegram.send_photo(chat_id=chat_id, photo=open('./snap.jpg', 'rb')) :
         print('photo sent')
 
-    if telegram.send_message(chat_id=chat_id, text="Movement detected in "+config.device_location.name):
+    if telegram.send_message(chat_id=chat_id, text="Movement detected in the "+config.device.location.name):
         print('message sent')
 
     save_record(config.device.id, actionID)
