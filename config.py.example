@@ -1,0 +1,21 @@
+# Spotify
+spotify_username = ''
+spotify_scope = 'user-read-playback-state user-modify-playback-state'
+spotify_client_id = ''
+spotify_client_secret = ''
+spotify_redirect_uri = 'http://localhost:8888/callback'
+
+# Telegram
+telegram_token = ''
+telegram_chat = 123456
+
+class Device:
+    def __init__(self, id, has_camera, has_speaker, move_sensor_port, location, name):
+        self.id = id
+        self.name = name
+        self.location = location
+        self.has_camera = has_camera
+        self.has_speaker = has_speaker
+        self.move_sensor_port = move_sensor_port
+
+device = Device(null, null, null, null, null, null)
