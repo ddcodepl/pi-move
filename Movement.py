@@ -5,7 +5,9 @@ import config
 import subprocess
 import RPi.GPIO as GPIO
 
+# Get device configuration
 device = config.getDeviceConfig()
+location = device['location']['name']
 
 # # Sensor Settings
 SENSOR_PIN = config.movement_sensor_pin
@@ -22,16 +24,20 @@ def clear():
 
 
 def move_cb(channel):
-    if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in "+device['location']['name']):
-        print('message sent')
+    if device['send_notifications']:
+        if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in " + location):
+            print('message sent')
 
 
 def photo_cb(channel):
-    if config.telegram.send_photo(chat_id=config.telegram_chat_id, photo=open('./snap.jpg', 'rb')):
-        print('photo sent')
+    subprocess.call('./photo.sh', shell=True)
 
-    if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in "+device['location']['name']):
-        print('message sent')
+    if device['send_notifications']:
+        if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in " + location):
+            print('message sent')
+
+        if config.telegram.send_photo(chat_id=config.telegram_chat_id, photo=open('./snap.jpg', 'rb')):
+            print('photo sent')
 
 
 time.sleep(2)
@@ -44,9 +50,12 @@ try:
         print("Init without camera")
         GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=move_cb)
 
+    config.telegram.send_message(
+        chat_id=config.telegram_chat_id, text=device['name'] + " turned on in " + location)
+
     while 1:
         time.sleep(1)
 
 except KeyboardInterrupt:
     print "Finish..."
-GPIO.cleanup()
+    GPIO.cleanup()
