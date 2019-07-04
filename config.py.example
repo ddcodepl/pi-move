@@ -1,21 +1,42 @@
-# Spotify
+import json
+import pymongo
+import requests
+import telegram
+
+# Global Settings
+api_url = ''
+
+
+# Database Settings
+DB_USER = ''
+DB_PASS = ''
+DB_NAME = ''
+DB_ADDR = ''
+DB_PORT = ''
+DB_CON = 'mongodb://DB_USER:DB_PASS@DB_ADDR:DB_PORT/'
+client = pymongo.MongoClient(DB_CON)
+db = client[DB_NAME]
+
+# Device Settings
+device_id = ''
+
+# Spotify Settings
 spotify_username = ''
-spotify_scope = 'user-read-playback-state user-modify-playback-state'
+spotify_scope = ''
 spotify_client_id = ''
 spotify_client_secret = ''
-spotify_redirect_uri = 'http://localhost:8888/callback'
+spotify_redirect_uri = ''
 
-# Telegram
+# Telegram Settings
 telegram_token = ''
-telegram_chat = 123456
+telegram_chat_id = ''
+telegram = telegram.Bot(telegram_token)
 
-class Device:
-    def __init__(self, id, has_camera, has_speaker, move_sensor_port, location, name):
-        self.id = id
-        self.name = name
-        self.location = location
-        self.has_camera = has_camera
-        self.has_speaker = has_speaker
-        self.move_sensor_port = move_sensor_port
+# Modules Settings
+movement_sensor_pin = 4
 
-device = Device(null, null, null, null, null, null)
+
+def getDeviceConfig():
+    url = api_url + '/devices/' + device_id
+    response = requests.get(url)
+    return json.loads(response.text)
