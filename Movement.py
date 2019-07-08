@@ -45,24 +45,26 @@ def photo_cb(channel):
 time.sleep(2)
 
 
-try:
+def init():
     log = Logger(config.device['location']['_id'])
 
-    if config.device['has_camera']:
-        print("Init with camera")
-        GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=photo_cb)
-    else:
-        print("Init without camera")
-        GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=move_cb)
+    try:
 
-    config.telegram.send_message(
-        chat_id=config.telegram_chat_id, text=config.device['name'] + " turned on in " + config.location)
+        if config.device['has_camera']:
+            print("Init with camera")
+            GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=photo_cb)
+        else:
+            print("Init without camera")
+            GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=move_cb)
 
-    log.save_record('5d23232072fa8f1bab88cf88', '')
+        config.telegram.send_message(
+            chat_id=config.telegram_chat_id, text=config.device['name'] + " turned on in " + config.location)
 
-    while 1:
-        time.sleep(1)
+        log.save_record('5d23232072fa8f1bab88cf88', '')
 
-except KeyboardInterrupt:
-    print "Finish..."
-    GPIO.cleanup()
+        while 1:
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        print "Finish..."
+        GPIO.cleanup()

@@ -6,14 +6,15 @@ class Logger:
     def __init__(self, location):
         self.location = config.device['location']['_id']
 
-    def save_record(self, recordID, photo):
+    def save_record(self, recordID, details):
         logs = config.db.logs
 
         data = {
-            "location_id": self.location,
-            "action_id": recordID,
+            "location": self.location,
+            "action": recordID,
             "time": int(time.time()),
-            "has_photo": photo
+            "details": details,
+            "device": config.device_id
         }
 
         logs.insert_one(data)
