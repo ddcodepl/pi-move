@@ -16,7 +16,7 @@ try:
     token = util.prompt_for_user_token(
         config.spotify_username, config.spotify_scope, config.spotify_client_id, config.spotify_client_secret, config.spotify_redirect_uri)
 except (AttributeError, JSONDecodeError):
-    os.remove('.cache-'+username)
+    os.remove('.cache-'+config.spotify_username)
     token = util.prompt_for_user_token(
         config.spotify_username, config.spotify_scope, config.spotify_client_id, config.spotify_client_secret, config.spotify_redirect_uri)
 
@@ -26,7 +26,7 @@ headers = {
     'Content-Type': "application/json",
 }
 
-deviceName = 'raspotify'
+deviceName = config.name
 
 
 def get_current_device():
@@ -46,7 +46,7 @@ def find_device_id_by_name(name=config.device.name):
     time.sleep(5)
     deviceID = ' '
     for device in data['devices']:
-        if name == device['name']:
+        if config.name == device['name']:
             deviceID = device['id']
             return deviceID
 
@@ -54,11 +54,10 @@ def find_device_id_by_name(name=config.device.name):
         print name + " id is: " + deviceID
         return deviceID
     else:
-        print "Couldn't find device with this name"
+        print "Couldn't find device " + config.name
 
 
 def switch_device_and_play_music():
-    # Need root
     currentDevice = get_current_device()
 
     if currentDevice == deviceName:
