@@ -30,15 +30,16 @@ def move_cb(channel):
 
 
 def photo_cb(channel):
-    subprocess.call('./photo.sh', shell=True)
-    log.save_record('5d1d3f0a46c0175c60aaafa5', '')
+    date = time.time()
+    subprocess.call('./photo.sh '+date, shell=True)
+    log.save_record('5d1d3f0a46c0175c60aaafa5', date+'.jpg')
 
     if config.device['send_notifications']:
         if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in " + config.location):
             log.save_record('5d1d3f4f46c0175c60aaafab', '')
             print('message sent')
 
-        if config.telegram.send_photo(chat_id=config.telegram_chat_id, photo=open('./snap.jpg', 'rb')):
+        if config.telegram.send_photo(chat_id=config.telegram_chat_id, photo=open('./ai_model/test/snap.jpg', 'rb')):
             print('photo sent')
 
 

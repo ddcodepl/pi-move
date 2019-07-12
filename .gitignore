@@ -106,3 +106,8 @@ config.py
 .cache-*
 .vscode
 photos
+
+*.clf
+*.jpg
+*.png
+*.jpeg

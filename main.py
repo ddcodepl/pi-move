@@ -4,14 +4,14 @@ import Temperature
 
 
 def init():
-    print('Init device')
+    print('Device initiated')
 
     if config.device['has_movement_sensor']:
-        print('Movement sensor init')
+        print('Movement sensor initiated')
         Movement.init()
 
     if config.device['has_thermometer']:
-        print('Termomether init')
+        print('Termomether  initiated')
         Temperature.init()
 
 
