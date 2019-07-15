@@ -14,10 +14,16 @@ def init():
 
         if (int(temperature) - int(prevTemp) >= 2 or (int(prevTemp) - int(temperature)) >= 2):
             if config.device['send_notifications']:
-                if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Temperature changed in "+config.location+" to "+str(temperature)):
-                    log.save_record('5d23ca7a41f8c8072753eac6',
-                                    int(temperature))
-                    print('message sent')
+                text = "Temperature changed in " + \
+                    config.location+" to "+str(temperature)
+
+                log.save_record('5d23ca7a41f8c8072753eac6',
+                                int(temperature))
+
+                if config.telegram.send_message(chat_id=config.telegram_chat_id, text=text):
+                    print('Message sent')
+                else:
+                    print('Some error occurred when tried to send message')
 
             print('Temperature canged more by 2 degrees!')
             prevTemp = int(temperature)

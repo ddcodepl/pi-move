@@ -8,6 +8,8 @@ import face_recognition
 from face_recognition.face_recognition_cli import image_files_in_folder
 import shutil
 import time
+import config
+from DBLogger import Logger
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -116,8 +118,10 @@ def show_prediction_labels_on_image(img_path, predictions):
     pil_image.show()
 
 
-if __name__ == "__main__":
+def init():
     # Setup Paths
+    print('Face recognition initiated')
+    log = Logger(config.device['location']['_id'])
     path_train = os.path.join(os.getcwd(), 'ai_model/train')
     path_test = os.path.join(os.getcwd(), 'ai_model/test')
     path_model = os.path.join(
@@ -148,6 +152,15 @@ if __name__ == "__main__":
                     os.getcwd(), 'ai_model/train/'+name+'/'+image_file_new)
                 shutil.copy(old_photo_path, new_photo_path)
 
-        # Display results overlaid on an image
-        show_prediction_labels_on_image(
-            os.path.join(path_test, image_file), predictions)
+            log.save_record('5d2b7198e036f30d9394ae38', name)
+            text = name + " detected in " + config.location
+
+            if config.device['send_notifications']:
+                config.telegram.send_message(
+                    chat_id=config.telegram_chat_id, text=text)
+
+            print(text)
+
+            # Display results overlaid on an image
+            # show_prediction_labels_on_image(
+            #     os.path.join(path_test, image_file), predictions)

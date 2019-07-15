@@ -4,6 +4,7 @@ import time
 import config
 import subprocess
 import RPi.GPIO as GPIO
+import FaceLogger
 from DBLogger import Logger
 
 
@@ -11,6 +12,9 @@ from DBLogger import Logger
 SENSOR_PIN = config.movement_sensor_pin
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SENSOR_PIN, GPIO.IN)
+
+log = Logger(config.device['location']['_id'])
+log_face = FaceLogger
 
 
 def clear():
@@ -23,32 +27,33 @@ def clear():
 
 def move_cb(channel):
     log.save_record('5d1d3efa46c0175c60aaafa4', '')
+
     if config.device['send_notifications']:
         if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in " + config.location):
             log.save_record('5d1d3f4f46c0175c60aaafab', '')
-            print('message sent')
+            print('Message sent')
 
 
 def photo_cb(channel):
     date = time.time()
-    subprocess.call('./photo.sh '+date, shell=True)
-    log.save_record('5d1d3f0a46c0175c60aaafa5', date+'.jpg')
+    subprocess.call('./photo.sh '+str(date), shell=True)
+    log.save_record('5d1d3f0a46c0175c60aaafa5', str(date)+'.jpg')
+
+    log_face.init()
 
     if config.device['send_notifications']:
         if config.telegram.send_message(chat_id=config.telegram_chat_id, text="Movement detected in " + config.location):
             log.save_record('5d1d3f4f46c0175c60aaafab', '')
-            print('message sent')
+            print('Message sent')
 
         if config.telegram.send_photo(chat_id=config.telegram_chat_id, photo=open('./ai_model/test/snap.jpg', 'rb')):
-            print('photo sent')
+            print('Photo sent')
 
 
 time.sleep(2)
 
 
 def init():
-    log = Logger(config.device['location']['_id'])
-
     try:
 
         if config.device['has_camera']:
