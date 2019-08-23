@@ -1,0 +1,1 @@
+screen -d python main.py

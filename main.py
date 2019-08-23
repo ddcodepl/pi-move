@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import config
 import Movement
 import Temperature
@@ -11,7 +12,7 @@ def init():
         Movement.init()
 
     if config.device['has_thermometer']:
-        print('Termomether  initiated')
+        print('Termomether initiated')
         Temperature.init()
 
 

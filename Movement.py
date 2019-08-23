@@ -36,7 +36,12 @@ def move_cb(channel):
 
 def photo_cb(channel):
     date = time.time()
-    subprocess.call('./photo.sh '+str(date), shell=True)
+
+    subprocess.call(
+        ['fswebcam -r 1920x1080 --no-banner ./ai_model/test/snap.jpg'], shell=True)
+    subprocess.call(
+        ['cp ./ai_model/test/snap.jpg ./photos/'+str(date) + '.jpg'], shell=True)
+
     log.save_record('5d1d3f0a46c0175c60aaafa5', str(date)+'.jpg')
 
     log_face.init()
@@ -50,12 +55,8 @@ def photo_cb(channel):
             print('Photo sent')
 
 
-time.sleep(2)
-
-
 def init():
     try:
-
         if config.device['has_camera']:
             print("Init with camera")
             GPIO.add_event_detect(SENSOR_PIN, GPIO.RISING, callback=photo_cb)

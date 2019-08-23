@@ -1,0 +1,1 @@
+mv ./photos/* /mnt/CloudPhotos/HomeSec/Photos/.
